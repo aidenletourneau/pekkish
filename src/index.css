@@ -1,1 +1,14 @@
 
+#text-box {
+  width: 300px;
+  height: 50px;
+  font-size: larger;
+}
+
+body{
+  padding-left: 10px
+}
+
+#search-results {
+  width: 300px;
+}

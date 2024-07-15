@@ -1,14 +1,12 @@
+import SearchBox from './SearchBox'
 
-
-function App() {
+export default function App() {
   
 
   return (
     <>
       <h1>Pekkish</h1>
-      <input type='text'></input>
+      <SearchBox/>
     </>
   )
 }
-
-export default App

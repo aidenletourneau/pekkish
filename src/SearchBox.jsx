@@ -17,7 +17,6 @@ export default function SearchBox () {
         return;
       }
       try {
-        console.log(textBox.value)
         const data = await fetch(`https://api.mapbox.com/search/searchbox/v1/suggest?q=${query}?language=en&limit=10&session_token=[GENERATED-UUID]&country=US&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`, {method: "GET"})
         const json = await data.json()
         setSuggestions(json.suggestions)

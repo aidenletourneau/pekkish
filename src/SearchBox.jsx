@@ -8,7 +8,14 @@ export default function SearchBox () {
 
   useEffect(() => {
     const textBox = textBoxRef.current
-    //console.log(navigator.geolocation.getCurrentPosition)
+    let latitude = null;
+    let longitude = null;
+    navigator.geolocation.getCurrentPosition((position) => {
+      latitude = position.coords.latitude
+      longitude =  position.coords.longitude
+    }, (error) => {
+      console.error(error)
+    })
 
     async function handleInput () {
       const query = textBox.value
@@ -17,7 +24,7 @@ export default function SearchBox () {
         return;
       }
       try {
-        const data = await fetch(`https://api.mapbox.com/search/searchbox/v1/suggest?q=${query}?language=en&limit=10&session_token=[GENERATED-UUID]&country=US&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`, {method: "GET"})
+        const data = await fetch(`https://api.mapbox.com/search/searchbox/v1/suggest?proximity=${longitude},${latitude}&q=${query}&language=en&limit=10&session_token=[GENERATED-UUID]&country=US&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`, {method: "GET"})
         const json = await data.json()
         setSuggestions(json.suggestions)
       }
@@ -37,7 +44,7 @@ export default function SearchBox () {
       <input id="text-box" ref={textBoxRef} placeholder="Enter Search Suggestions..." type='text'/>
       <div id='search-results'>
         {suggestions.map((suggestion, index) => (
-            <li key={index}>{suggestion.name}</li>
+            <a><li key={index}>{suggestion.name}</li></a>
           ))}
       </div>
     </>

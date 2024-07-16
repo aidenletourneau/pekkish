@@ -39,12 +39,18 @@ export default function SearchBox () {
     };
   }, [])
 
+  function handleSuggestionClick() {
+    const suggestion = event.target.innerText
+    textBoxRef.current.value = suggestion
+    setSuggestions([])
+  }
+
   return (
     <>
       <input id="text-box" ref={textBoxRef} placeholder="Enter Search Suggestions..." type='text'/>
       <div id='search-results'>
         {suggestions.map((suggestion, index) => (
-            <a><li key={index}>{suggestion.name}</li></a>
+            <a onClick={handleSuggestionClick} key={index}><li className="search-result">{suggestion.name}</li></a>
           ))}
       </div>
     </>

@@ -16,3 +16,10 @@ body{
 a{
   cursor: pointer;
 }
+
+.search-result{
+  height: 30px;
+  background-color: rgb(216, 216, 216);
+  justify-content: center;
+  
+}

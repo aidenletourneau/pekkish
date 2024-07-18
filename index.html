@@ -2,49 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-    <link
-      href="https://api.tiles.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css"
-      rel="stylesheet"
-    />
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-      }
-
-      #map {
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 500px;
-        height: 500px;
-      }
-
-      #instructions {
-        position: absolute;
-        margin: 20px;
-        width: 25%;
-        top: 0;
-        left: 300px;
-        bottom: 20%;
-        padding: 20px;
-        background-color: #ffffff;
-        overflow-y: scroll;
-        font-family: sans-serif;
-      }
-    </style>
   </head>
   <body>
     <div id="root"></div>
-    <div id="map"></div>
-    <div id="instructions"></div>
-
-    
-    <script type="module" src="./maps.js"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

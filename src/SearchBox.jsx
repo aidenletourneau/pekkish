@@ -45,6 +45,7 @@ export default function SearchBox () {
     setSuggestions([])
   }
 
+
   return (
     <>
       <input id="text-box" ref={textBoxRef} placeholder="Enter Search Suggestions..." type='text'/>

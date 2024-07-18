@@ -1,4 +1,5 @@
 import SearchBox from './SearchBox'
+import MapBox from './MapBox'
 
 export default function App() {
   
@@ -7,6 +8,7 @@ export default function App() {
     <>
       <h1>Pekkish</h1>
       <SearchBox/>
+      <MapBox/>
     </>
   )
 }

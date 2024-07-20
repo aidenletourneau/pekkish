@@ -5,6 +5,7 @@ export default function SearchBox () {
 
   const textBoxRef = useRef(null)
   const [suggestions, setSuggestions] = useState([])
+  const [coordinates, setCoordinates] = useState([])
 
   useEffect(() => {
     const textBox = textBoxRef.current
@@ -43,15 +44,15 @@ export default function SearchBox () {
     const suggestion = event.target.innerText
     textBoxRef.current.value = suggestion
     setSuggestions([])
+    setCoordinates(event.target.address)
   }
-
 
   return (
     <>
-      <input id="text-box" ref={textBoxRef} placeholder="Enter Search Suggestions..." type='text'/>
+      <input className="text-box" ref={textBoxRef} placeholder="Enter Search Suggestions..." type='text'/>
       <div id='search-results'>
         {suggestions.map((suggestion, index) => (
-            <a onClick={handleSuggestionClick} key={index}><li className="search-result">{suggestion.name}</li></a>
+            <a onClick={handleSuggestionClick} address={suggestion.address} key={index}><li className="search-result">{suggestion.name}</li></a>
           ))}
       </div>
     </>

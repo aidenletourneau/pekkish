@@ -1,7 +1,10 @@
+li{
+  list-style: none;
+}
 
-#text-box {
-  width: 300px;
-  height: 50px;
+.text-box {
+  width: 250px;
+  height: 40px;
   font-size: larger;
 }
 
@@ -21,10 +24,12 @@
 body{
   padding-left: 10px
 }
+
 #map{
   width: 300px;
   height: 300px;  
 }
+
 #search-results {
   width: 300px;
 }
@@ -37,5 +42,9 @@ a{
   height: 30px;
   background-color: rgb(216, 216, 216);
   justify-content: center;
-  
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
 }

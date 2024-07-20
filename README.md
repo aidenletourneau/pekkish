@@ -14,7 +14,11 @@ I really began the project today. I really think this could be useful to people 
 7/16/2024
 Took a break today, went to universal with my sister!
 
-7/17/2024
+7/18/2024
 Im determined to create a map component in react. at first I was struggling with importing the js from the html from the tutorials on using their api but i just needed to npm i mapbox-gl then import into the component. I also found out that when using useRef I always need to use the object/element.current or else im not referencing the correct object.
 
-Im a little stuck on creating the MapBox component. I having trouble adding the routes but Im not getting errors so its almost worse. 
+Im a little stuck on creating the MapBox component. I having trouble adding the routes but Im not getting errors so its almost worse.
+- I needed to use useRef to have global scope of the map within the component, I also needed to check if a layer was on top of the map already before trying to add it. 
+
+
+7/19/2024

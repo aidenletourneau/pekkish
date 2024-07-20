@@ -6,9 +6,17 @@ export default function App() {
 
   return (
     <>
-      <h1>Pekkish</h1>
-      <SearchBox/>
-      <MapBox/>
+      <div className="content">
+        <div>
+          <h1>Pekkish</h1>
+          <h3>Start</h3>
+          <SearchBox/>
+          <h3>End</h3>
+          <SearchBox/>
+        </div>
+        <MapBox/>
+      </div>
+      
     </>
   )
 }

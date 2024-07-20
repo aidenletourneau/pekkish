@@ -20,7 +20,6 @@ export default function MapBox() {
   }, []);
 
   useEffect(() => {
-    console.log('here')
     if (!coordinates) return; // Only initialize the map if coordinates are available
 
     mapboxgl.accessToken = 'pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw';
@@ -148,8 +147,6 @@ export default function MapBox() {
   }
 
   return (
-    <>
-      <div id='map'/>
-    </>
+    <div id='map'/>
   );
 }

@@ -1,11 +1,16 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState, forwardRef} from 'react'
 
 
-export default function SearchBox () {
+const SearchBox = forwardRef(({}, ref) => {
 
-  const textBoxRef = useRef(null)
+  const textBoxRef = ref || useRef(null)
   const [suggestions, setSuggestions] = useState([])
-  const [coordinates, setCoordinates] = useState([])
+
+  function handleSuggestionClick(event) {
+    const suggestion = event.target.innerText
+    textBoxRef.current.value = suggestion
+    setSuggestions([])
+  }
 
   useEffect(() => {
     const textBox = textBoxRef.current
@@ -24,6 +29,7 @@ export default function SearchBox () {
         setSuggestions([])
         return;
       }
+
       try {
         const data = await fetch(`https://api.mapbox.com/search/searchbox/v1/suggest?proximity=${longitude},${latitude}&q=${query}&language=en&limit=10&session_token=[GENERATED-UUID]&country=US&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`, {method: "GET"})
         const json = await data.json()
@@ -40,12 +46,7 @@ export default function SearchBox () {
     };
   }, [])
 
-  function handleSuggestionClick() {
-    const suggestion = event.target.innerText
-    textBoxRef.current.value = suggestion
-    setSuggestions([])
-    setCoordinates(event.target.address)
-  }
+
 
   return (
     <>
@@ -57,4 +58,6 @@ export default function SearchBox () {
       </div>
     </>
   )
-}
+})
+
+export default SearchBox;

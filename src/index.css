@@ -8,6 +8,13 @@ li{
   font-size: larger;
 }
 
+
+
+button{
+  padding: 0px;
+  margin: 0px;
+}
+
 #instructions {
   position: absolute;
   margin: 20px;

@@ -67,40 +67,6 @@ export default function MapBox({mapRef}) {
           }
         });
       }
-
-      map.current.on('click', (event) => {
-        const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key]);
-        const end = {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              properties: {},
-              geometry: {
-                type: 'Point',
-                coordinates: coords
-              }
-            }
-          ]
-        };
-        if (map.current.getLayer('end')) {
-          map.current.getSource('end').setData(end);
-        } else {
-          map.current.addLayer({
-            id: 'end',
-            type: 'circle',
-            source: {
-              type: 'geojson',
-              data: end
-            },
-            paint: {
-              'circle-radius': 10,
-              'circle-color': '#f30'
-            }
-          });
-        }
-        getRoute(coords);
-      });
     });
 
     return () => map.current.remove(); // Clean up on unmount

@@ -21,4 +21,5 @@ Im a little stuck on creating the MapBox component. I having trouble adding the 
 - I needed to use useRef to have global scope of the map within the component, I also needed to check if a layer was on top of the map already before trying to add it. 
 
 
-7/19/2024
+7/20/2024
+- This is really hard. I keep getting overwhelmed and needing breaks to actually make any progress. 

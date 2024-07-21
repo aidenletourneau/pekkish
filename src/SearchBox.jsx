@@ -1,19 +1,20 @@
 import React, {useEffect, useRef, useState, forwardRef} from 'react'
 
 
-const SearchBox = forwardRef(({}, ref) => {
+const SearchBox = forwardRef(({mapRef}, ref) => {
 
-  const textBoxRef = ref || useRef(null)
+  //
+  const inputRef = ref || useRef(null)
   const [suggestions, setSuggestions] = useState([])
 
   function handleSuggestionClick(event) {
     const suggestion = event.target.innerText
-    textBoxRef.current.value = suggestion
+    inputRef.current.value = suggestion
     setSuggestions([])
   }
 
   useEffect(() => {
-    const textBox = textBoxRef.current
+    const textBox = inputRef.current
     let latitude = null;
     let longitude = null;
     navigator.geolocation.getCurrentPosition((position) => {
@@ -50,12 +51,14 @@ const SearchBox = forwardRef(({}, ref) => {
 
   return (
     <>
-      <input className="text-box" ref={textBoxRef} placeholder="Enter Search Suggestions..." type='text'/>
+      <input className="text-box" ref={inputRef} placeholder="Enter Search..." type='text'/>
+      {suggestions && 
       <div id='search-results'>
         {suggestions.map((suggestion, index) => (
-            <a onClick={handleSuggestionClick} address={suggestion.address} key={index}><li className="search-result">{suggestion.name}</li></a>
+            <a onClick={handleSuggestionClick} key={index}><li className="search-result">{suggestion.name}</li></a>
           ))}
       </div>
+}
     </>
   )
 })

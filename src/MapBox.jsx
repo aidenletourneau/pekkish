@@ -2,8 +2,8 @@ import mapboxgl from 'mapbox-gl';
 import React, { useRef, useEffect, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-export default function MapBox() {
-  const map = useRef(null);
+export default function MapBox({mapRef}) {
+  const map = mapRef || useRef(null);
   const [coordinates, setCoordinates] = useState(null);
 
   useEffect(() => {
@@ -147,6 +147,6 @@ export default function MapBox() {
   }
 
   return (
-    <div id='map'/>
+    <div ref={mapRef} id='map'/>
   );
 }

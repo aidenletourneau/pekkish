@@ -2,22 +2,9 @@ import mapboxgl from 'mapbox-gl';
 import React, { useRef, useEffect, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-export default function MapBox({mapRef}) {
+export default function MapBox({mapRef, coordinates}) {
   const map = mapRef || useRef(null);
-  const [coordinates, setCoordinates] = useState(null);
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        setCoordinates([longitude, latitude]);
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  }, []);
+  
 
   useEffect(() => {
     if (!coordinates) return; // Only initialize the map if coordinates are available
@@ -29,14 +16,6 @@ export default function MapBox({mapRef}) {
       center: coordinates,
       zoom: 10
     });
-
-    const bounds = [
-      [coordinates[0] - 2, coordinates[1] + 1],
-      [coordinates[0] + 2, coordinates[1] - 1]
-    ];
-    //map.current.setMaxBounds(bounds);
-
-    //TODO: figure out bounds
 
     map.current.on('load', () => {
       getRoute(coordinates);
@@ -62,7 +41,7 @@ export default function MapBox({mapRef}) {
             }
           },
           paint: {
-            'circle-radius': 10,
+            'circle-radius': 5,
             'circle-color': '#3887be'
           }
         });

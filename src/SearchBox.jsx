@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState, forwardRef} from 'react'
 
 
-const SearchBox = forwardRef(({mapRef}, ref) => {
+const SearchBox = forwardRef(({mapRef, coordinates}, ref) => {
 
   //
   const inputRef = ref || useRef(null)
@@ -15,14 +15,6 @@ const SearchBox = forwardRef(({mapRef}, ref) => {
 
   useEffect(() => {
     const textBox = inputRef.current
-    let latitude = null;
-    let longitude = null;
-    navigator.geolocation.getCurrentPosition((position) => {
-      latitude = position.coords.latitude
-      longitude =  position.coords.longitude
-    }, (error) => {
-      console.error(error)
-    })
 
     async function handleInput () {
       const query = textBox.value
@@ -32,7 +24,7 @@ const SearchBox = forwardRef(({mapRef}, ref) => {
       }
 
       try {
-        const data = await fetch(`https://api.mapbox.com/search/searchbox/v1/suggest?proximity=${longitude},${latitude}&q=${query}&language=en&limit=10&session_token=[GENERATED-UUID]&country=US&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`, {method: "GET"})
+        const data = await fetch(`https://api.mapbox.com/search/searchbox/v1/suggest?proximity=${coordinates[1]},${coordinates[0]}&q=${query}&language=en&limit=10&session_token=[GENERATED-UUID]&country=US&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`, {method: "GET"})
         const json = await data.json()
         setSuggestions(json.suggestions)
       }
@@ -51,14 +43,12 @@ const SearchBox = forwardRef(({mapRef}, ref) => {
 
   return (
     <>
-      <input className="text-box" ref={inputRef} placeholder="Enter Search..." type='text'/>
-      {suggestions && 
+      <input disabled={!suggestions} className="text-box" ref={inputRef} placeholder="Enter Search..." type='text'/>
       <div id='search-results'>
         {suggestions.map((suggestion, index) => (
             <a onClick={handleSuggestionClick} key={index}><li className="search-result">{suggestion.name}</li></a>
           ))}
       </div>
-}
     </>
   )
 })

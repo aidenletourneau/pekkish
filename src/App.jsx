@@ -21,7 +21,22 @@ export default function App() {
 
   function addMapPoint(coords, id){
     if(mapRef.current.getSource(id)){
-
+      //need to make into a geojson as a param for setData()
+      const pointGeojson = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'Point',
+              coordinates: coords
+            }
+          }
+        ]
+      };
+      mapRef.current.getSource(id).setData(pointGeojson)
+      return
     }
     mapRef.current.addLayer({
       id: id,

@@ -48,7 +48,10 @@ const SearchBox = forwardRef(({coordinates}, ref) => {
       <input disabled={!suggestions} className="text-box" ref={inputRef} placeholder="Enter Search..." type='text'/>
       <div id='search-results'>
         {suggestions.map((suggestion, index) => (
-            <a onClick={handleSuggestionClick} key={index}><li className="search-result">{suggestion.name}</li></a>
+            <a onClick={handleSuggestionClick} key={index}>
+              <li className="search-result">{suggestion.name}</li>
+              <p>{suggestion.full_address}</p>
+            </a>
           ))}
       </div>
     </>

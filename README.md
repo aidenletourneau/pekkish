@@ -23,3 +23,9 @@ Im a little stuck on creating the MapBox component. I having trouble adding the 
 
 7/20/2024
 - This is really hard. I keep getting overwhelmed and needing breaks to actually make any progress. 
+
+7/21/2024
+- I made a lot of mental progress in that I feel like im learning react concepts better and when to use different hooks and how to pass ref and state between components. 
+
+7/22/2024
+After looking at MapBox documentation I realize that I could easily use their own geocoding utilities/searchbox. I think I might look into that.

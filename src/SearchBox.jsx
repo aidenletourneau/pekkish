@@ -1,9 +1,8 @@
 import React, {useEffect, useRef, useState, forwardRef} from 'react'
 
 
-const SearchBox = forwardRef(({mapRef, coordinates}, ref) => {
+const SearchBox = forwardRef(({coordinates}, ref) => {
 
-  //
   const inputRef = ref || useRef(null)
   const [suggestions, setSuggestions] = useState([])
 
@@ -14,6 +13,8 @@ const SearchBox = forwardRef(({mapRef, coordinates}, ref) => {
   }
 
   useEffect(() => {
+    if (!coordinates) return; 
+
     const textBox = inputRef.current
 
     async function handleInput () {
@@ -37,7 +38,7 @@ const SearchBox = forwardRef(({mapRef, coordinates}, ref) => {
     return () => {
       textBox.removeEventListener('input', handleInput);
     };
-  }, [])
+  }, [coordinates])
 
 
 

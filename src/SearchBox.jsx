@@ -6,6 +6,7 @@ const SearchBox = forwardRef(({coordinates}, ref) => {
   const inputRef = ref || useRef(null)
   const [suggestions, setSuggestions] = useState([])
 
+
   function handleSuggestionClick(event) {
     const suggestion = event.target.innerText
     inputRef.current.value = suggestion

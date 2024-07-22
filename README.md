@@ -29,3 +29,5 @@ Im a little stuck on creating the MapBox component. I having trouble adding the 
 
 7/22/2024
 After looking at MapBox documentation I realize that I could easily use their own geocoding utilities/searchbox. I think I might look into that.
+I think I can move on to the meat of this project in trying to get all food results on the route.
+- Approach 1: have points evenly spread along the route and then make a radium from those points and search for all food options.

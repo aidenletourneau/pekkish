@@ -58,7 +58,7 @@ export default function App() {
         }
       },
       paint: {
-        'circle-radius': 10,
+        'circle-radius': 8,
         'circle-color': '#3887be'
       }
     });
@@ -69,7 +69,13 @@ export default function App() {
       `https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`,
       { method: 'GET' }
     );
+
+
     const json = await query.json();
+    const routeCoords = json.routes[0].geometry.coordinates
+    routeCoords.map((coord, index) => (addMapPoint(coord, index.toString())))
+
+
     const data = json.routes[0];
     const route = data.geometry.coordinates;
     const geojson = {

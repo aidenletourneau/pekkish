@@ -4,6 +4,7 @@ import {useRef, useState, useEffect} from 'react'
 export default function App() {
 
   const [coordinates, setCoordinates] = useState(null);
+  const [results, setResults] = useState(null)
   const startRef = useRef(null)
   const endRef = useRef(null)
   const mapRef = useRef(null)
@@ -66,14 +67,14 @@ export default function App() {
 
   async function addRoute(start, end) {
     const query = await fetch(
-      `https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`,
+      `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`,
       { method: 'GET' }
     );
 
 
     const json = await query.json();
-    const routeCoords = json.routes[0].geometry.coordinates
-    routeCoords.map((coord, index) => (addMapPoint(coord, index.toString())))
+    //const routeCoords = json.routes[0].geometry.coordinates
+    //routeCoords.map((coord, index) => (addMapPoint(coord, index.toString())))
 
 
     const data = json.routes[0];
@@ -123,6 +124,8 @@ export default function App() {
     addMapPoint(endCoords, 'endPoint')
     addRoute(startCoords, endCoords)
 
+
+
   }
 
   return (
@@ -137,6 +140,13 @@ export default function App() {
           <button onClick={handleSubmit}>Submit</button>
         </div>
         <MapBox coordinates={coordinates} mapRef={mapRef}/>
+        <div className='results'>
+          {results ?
+           results.map((result, index) => {
+            <a key={index}><li>{index}</li></a>
+           })
+          : <p>Loading...</p>}
+        </div>
       </div>
     </>
   )

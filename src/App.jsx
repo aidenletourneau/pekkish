@@ -1,7 +1,6 @@
 import SearchBox from './SearchBox'
 import MapBox from './MapBox'
 import {useRef, useState, useEffect} from 'react'
-import polyline from '@mapbox/polyline'
 export default function App() {
 
   const [coordinates, setCoordinates] = useState(null);
@@ -67,9 +66,8 @@ export default function App() {
   }
 
   async function addResults(encodedPolyline){
-    const resultsQuery = await fetch(`https://api.mapbox.com/search/searchbox/v1/category/food?access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw&language=en&limit=25&route=${encodedPolyline}&route_geometry=polyline6`)
+    const resultsQuery = await fetch(`https://api.mapbox.com/search/searchbox/v1/category/food?access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw&language=en&limit=25&route=${encodedPolyline}&route_geometry=polyline6&sar_type=isochrone`)
     const resultsJson = await resultsQuery.json()
-    
     setResults(resultsJson.features)
     resultsJson.features.map((result, index) => {
       addMapPoint(result.geometry.coordinates, `poi${index}`)
@@ -78,20 +76,22 @@ export default function App() {
 
   async function addRoute(start, end) {
 
+    // fetch for ecoded polyline
     const query = await fetch(
       `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=polyline6&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`,
       { method: 'GET' }
     );
     const json = await query.json()
-    
-
     const encodedPolyline = json.routes[0].geometry
-    console.log(encodedPolyline)
-    await addResults(encodedPolyline)
-    
 
-    const data = json.routes[0];
-    const route = data.geometry.coordinates;
+    //fetch for route coordinates
+    const queryGeojson = await fetch(
+      `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`,
+      { method: 'GET' }
+    );
+    const jsonGeojson = await queryGeojson.json()
+    const route = jsonGeojson.routes[0].geometry.coordinates
+
     const geojson = {
       type: 'Feature',
       properties: {},
@@ -122,6 +122,7 @@ export default function App() {
         }
       });
     }
+    return encodedPolyline
   }
 
   async function handleSubmit(){
@@ -135,7 +136,7 @@ export default function App() {
     const endCoords = endJson.features[0].geometry.coordinates
     addMapPoint(startCoords, 'startPoint')
     addMapPoint(endCoords, 'endPoint')
-    addRoute(startCoords, endCoords)
+    await addResults(await addRoute(startCoords, endCoords))
 
 
 

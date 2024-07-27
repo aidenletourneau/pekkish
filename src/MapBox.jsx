@@ -14,7 +14,7 @@ const MapBox = forwardRef(({coordinates}, mapRef) => {
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       center: coordinates,
-      zoom: 10
+      zoom: 5
     });
 
     mapRef.current.on('load', () => {

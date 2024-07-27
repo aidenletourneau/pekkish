@@ -67,21 +67,26 @@ export default function App() {
   }
 
   async function addResults(encodedPolyline){
-    const resultsQuery = await fetch(`https://api.mapbox.com/search/searchbox/v1/category/food?access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw&language=en&limit=25&route=${encodedPolyline}`)
+    const resultsQuery = await fetch(`https://api.mapbox.com/search/searchbox/v1/category/food?access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw&language=en&limit=25&route=${encodedPolyline}&route_geometry=polyline6`)
     const resultsJson = await resultsQuery.json()
+    
     setResults(resultsJson.features)
+    resultsJson.features.map((result, index) => {
+      addMapPoint(result.geometry.coordinates, `poi${index}`)
+    })
   }
 
   async function addRoute(start, end) {
+
     const query = await fetch(
-      `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`,
+      `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=polyline6&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`,
       { method: 'GET' }
     );
+    const json = await query.json()
+    
 
-
-    const json = await query.json();
-    const routeCoords = json.routes[0].geometry.coordinates
-    const encodedPolyline = polyline.encode(routeCoords)
+    const encodedPolyline = json.routes[0].geometry
+    console.log(encodedPolyline)
     await addResults(encodedPolyline)
     
 
@@ -142,18 +147,18 @@ export default function App() {
         <div>
           <h1>Pekish</h1>
           <h3>Start</h3>
-          <SearchBox mapRef={mapRef} ref={startRef} coordinates={coordinates}/>
+          <SearchBox ref={startRef} coordinates={coordinates}/>
           <h3>End</h3>
-          <SearchBox mapRef={mapRef} ref={endRef} coordinates={coordinates}/>
+          <SearchBox ref={endRef} coordinates={coordinates}/>
           <button onClick={handleSubmit}>Submit</button>
         </div>
-        <MapBox coordinates={coordinates} mapRef={mapRef}/>
+        <MapBox coordinates={coordinates} ref={mapRef}/>
         <div className='results'>
           {results ?
            results.map((result, index) => (
             <a key={index}><li>{result.properties.name}</li></a>
            ))
-          : <p>Loading...</p>}
+          : <p>Press Submit</p>}
         </div>
       </div>
     </>

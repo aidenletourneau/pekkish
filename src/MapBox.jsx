@@ -1,25 +1,25 @@
 import mapboxgl from 'mapbox-gl';
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, forwardRef } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-export default function MapBox({mapRef, coordinates}) {
-  const map = mapRef || useRef(null);
+const MapBox = forwardRef(({coordinates}, mapRef) => {
+  const mapContainerRef = useRef(null)
   
 
   useEffect(() => {
-    if (!coordinates) return; // Only initialize the map if coordinates are available
+    if (!coordinates) return; // Only initialize the mapRef if coordinates are available
 
     mapboxgl.accessToken = 'pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw';
-    map.current = new mapboxgl.Map({
-      container: 'map',
+    mapRef.current = new mapboxgl.Map({
+      container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       center: coordinates,
       zoom: 10
     });
 
-    map.current.on('load', () => {
-      if (!map.current.getLayer('point')) {
-        map.current.addLayer({
+    mapRef.current.on('load', () => {
+      if (!mapRef.current.getLayer('point')) {
+        mapRef.current.addLayer({
           id: 'point',
           type: 'circle',
           source: {
@@ -46,10 +46,13 @@ export default function MapBox({mapRef, coordinates}) {
       }
     });
 
-    return () => map.current.remove(); // Clean up on unmount
+    return () => mapRef.current.remove(); // Clean up on unmount
   }, [coordinates]);
 
   return (
-    <div ref={mapRef} id='map'/>
+    <div ref={mapContainerRef} id='map'/>
   );
-}
+})
+
+
+export default MapBox;

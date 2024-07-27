@@ -36,3 +36,6 @@ I found out about another mapbox feature that is searching for poi's based on a 
 
 7/23/2024
 - Im starting to think more ambitously about this project before I even get anywhere. Maybe it could be of a road trip planning app where users can add and save routes and search for more activities other than food.
+
+Im really getting tired with this issue ive come accross. When Im searching for pois along a route, they give me results in kansas and nowhere near the route im passing in through the parameter, I have no idea how to fix this and why its doing it.
+

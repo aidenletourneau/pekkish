@@ -1,5 +1,5 @@
-import SearchBox from './SearchBox'
-import MapBox from './MapBox'
+import SearchBox from '../components/SearchBox'
+import MapBox from '../components/MapBox'
 import {useRef, useState, useEffect} from 'react'
 export default function App() {
 

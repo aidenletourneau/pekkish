@@ -17,8 +17,8 @@ export default function Root() {
           },
           }}>
           <Menu>
-            <MenuItem component={<Link to='/'/>}> Home </MenuItem>
             <MenuItem component={<Link to='/about'/>}> About </MenuItem>
+            <MenuItem component={<Link to='/'/>}> Home </MenuItem>
           </Menu>
         </Sidebar>
         <Outlet/>

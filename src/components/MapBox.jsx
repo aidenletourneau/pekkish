@@ -1,5 +1,5 @@
 import mapboxgl from 'mapbox-gl';
-import React, { useRef, useEffect, useState, forwardRef } from 'react';
+import React, { useRef, useEffect, forwardRef } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MapBox = forwardRef(({coordinates}, mapRef) => {

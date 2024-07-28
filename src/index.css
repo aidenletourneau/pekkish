@@ -14,7 +14,9 @@ li{
   font-size: larger;
 }
 
-
+body{
+  height: 100vh;
+}
 
 #map{
   width: 300px;
@@ -44,4 +46,5 @@ a{
 #root{
   display: flex;
   flex-direction: row;
+  height: 100%;
 }

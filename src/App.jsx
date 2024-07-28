@@ -143,7 +143,6 @@ export default function App() {
   }
 
   return (
-    <>
       <div className="content">
         <div>
           <h1>Pekish</h1>
@@ -162,6 +161,5 @@ export default function App() {
           : <p>Press Submit</p>}
         </div>
       </div>
-    </>
   )
 }

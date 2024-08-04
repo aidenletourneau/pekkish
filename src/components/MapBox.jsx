@@ -19,30 +19,30 @@ const MapBox = forwardRef(({coordinates}, mapRef) => {
 
     mapRef.current.on('load', () => {
       if (!mapRef.current.getLayer('point')) {
-        mapRef.current.addLayer({
-          id: 'point',
-          type: 'circle',
-          source: {
-            type: 'geojson',
-            data: {
-              type: 'FeatureCollection',
-              features: [
-                {
-                  type: 'Feature',
-                  properties: {},
-                  geometry: {
-                    type: 'Point',
-                    coordinates: coordinates
-                  }
-                }
-              ]
-            }
-          },
-          paint: {
-            'circle-radius': 5,
-            'circle-color': '#3887be'
-          }
-        });
+        // mapRef.current.addLayer({
+        //   id: 'point',
+        //   type: 'circle',
+        //   source: {
+        //     type: 'geojson',
+        //     data: {
+        //       type: 'FeatureCollection',
+        //       features: [
+        //         {
+        //           type: 'Feature',
+        //           properties: {},
+        //           geometry: {
+        //             type: 'Point',
+        //             coordinates: coordinates
+        //           }
+        //         }
+        //       ]
+        //     }
+        //   },
+        //   paint: {
+        //     'circle-radius': 5,
+        //     'circle-color': '#3887be'
+        //   }
+        // });
       }
     });
 

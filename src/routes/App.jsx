@@ -1,13 +1,18 @@
-import SearchBox from '../components/SearchBox'
 import MapBox from '../components/MapBox'
 import {useRef, useState, useEffect} from 'react'
+import { SearchBox  }  from '@mapbox/search-js-react';
+
 export default function App() {
 
   const [coordinates, setCoordinates] = useState(null);
-  const [results, setResults] = useState(null)
-  const startRef = useRef(null)
-  const endRef = useRef(null)
+  const [results, setResults] = useState([])
+  const [resultIdsSet, setresultIdsSet] = useState(new Set())
+  // const startRef = useRef(null)
+  // const endRef = useRef(null)
   const mapRef = useRef(null)
+
+  const [startValue, setStartValue] = useState([])
+  const [endValue, setEndValue] = useState([])
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -20,22 +25,30 @@ export default function App() {
     );
   }, []);
 
+  useEffect(() => {
+    results.filter((result, index) => {
+      addMapPoint(result.geometry.coordinates, `poi${index}`)
+    })
+  }, [results])
+
   function addMapPoint(coords, id){
-    if(mapRef.current.getSource(id)){
-      //need to make into a geojson as a param for setData()
-      const pointGeojson = {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'Point',
-              coordinates: coords
-            }
+
+
+    //need to make into a geojson as a param for setData()
+    const pointGeojson = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Point',
+            coordinates: coords
           }
-        ]
-      };
+        }
+      ]
+    };
+    if(mapRef.current.getSource(id)){
       mapRef.current.getSource(id).setData(pointGeojson)
       return
     }
@@ -44,19 +57,7 @@ export default function App() {
       type: 'circle',
       source: {
         type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              properties: {},
-              geometry: {
-                type: 'Point',
-                coordinates: coords
-              }
-            }
-          ]
-        }
+        data: pointGeojson
       },
       paint: {
         'circle-radius': 8,
@@ -65,13 +66,20 @@ export default function App() {
     });
   }
 
-  async function addResults(encodedPolyline){
+
+  async function updateResults(encodedPolyline){
     const resultsQuery = await fetch(`https://api.mapbox.com/search/searchbox/v1/category/food?access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw&language=en&limit=25&route=${encodedPolyline}&route_geometry=polyline6&sar_type=isochrone`)
     const resultsJson = await resultsQuery.json()
-    setResults(resultsJson.features)
-    resultsJson.features.map((result, index) => {
-      addMapPoint(result.geometry.coordinates, `poi${index}`)
+    //update results only if the id is not in idSet
+    const newResults = resultsJson.features.filter((result) => {
+      if (resultIdsSet.has(result.properties.mapbox_id)){
+        return false
+      }
+      resultIdsSet.add(result.properties.mapbox_id)
+      setresultIdsSet(prev => prev.add(result.properties.mapbox_id))
+      return true
     })
+    setResults(prevResults => [...prevResults, ...newResults])
   }
 
   async function addRoute(start, end) {
@@ -91,6 +99,33 @@ export default function App() {
     );
     const jsonGeojson = await queryGeojson.json()
     const route = jsonGeojson.routes[0].geometry.coordinates
+    // route.map((point, index) => {
+    //   addMapPoint(point, `routePoint${index}`)
+    // })
+
+
+    //trying a solution to get all poi options by making a request for each segment of the route
+    let brokenUpRoute = [];
+    let brokenUpPolylines = []
+    for(let i = 0; i < route.length-1; i++){
+      brokenUpRoute.push([route[i], route[i+1]])
+    }
+
+    for(const route of brokenUpRoute){
+      const query = await fetch(
+        `https://api.mapbox.com/directions/v5/mapbox/driving/${route[0][0]},${route[0][1]};${route[1][0]},${route[1][1]}?steps=true&geometries=polyline6&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`,
+        { method: 'GET' }
+      );
+      const json = await query.json()
+      brokenUpPolylines.push(json.routes[0].geometry)
+    }  
+    
+    if(results.length < 100){
+      for(const polyline of brokenUpPolylines){
+        await updateResults(polyline)
+      }
+    }
+    
 
     const geojson = {
       type: 'Feature',
@@ -125,41 +160,80 @@ export default function App() {
     return encodedPolyline
   }
 
-  async function handleSubmit(){
-    const startData = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${startRef.current.value}&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`)
+  async function handleSubmit(e){
+    e.preventDefault()
+
+    const startData = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${startValue}&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`)
     const startJson = await startData.json()
     const startCoords = startJson.features[0].geometry.coordinates
 
 
-    const endData = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${endRef.current.value}&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`)
+    const endData = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${endValue}&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`)
     const endJson = await endData.json()
     const endCoords = endJson.features[0].geometry.coordinates
     addMapPoint(startCoords, 'startPoint')
     addMapPoint(endCoords, 'endPoint')
-    await addResults(await addRoute(startCoords, endCoords))
-
-
-
+    await updateResults(await addRoute(startCoords, endCoords))
   }
+
 
   return (
       <div className="content">
-        <div>
-          <h1>Pekish</h1>
-          <h3>Start</h3>
-          <SearchBox ref={startRef} coordinates={coordinates}/>
-          <h3>End</h3>
-          <SearchBox ref={endRef} coordinates={coordinates}/>
-          <button onClick={handleSubmit}>Submit</button>
+        <div className='left'>
+          <form onSubmit={handleSubmit} >
+            <h3>Start</h3>
+
+            <SearchBox
+              accessToken='pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw'
+              options={{
+                language: 'en',
+                country: 'US'
+              }}
+              mapboxgl={mapRef.current}
+              marker={true}
+              value={startValue}
+              onRetrieve={(e) => {
+                setStartValue(e.features[0].properties.full_address)
+              }}
+            />
+
+
+            <h3>End</h3>
+
+
+            <SearchBox
+              accessToken='pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw'
+              options={{
+                language: 'en',
+                country: 'US'
+              }}
+              marker={true}
+              mapboxgl={mapRef.current}
+              value={endValue}
+              onRetrieve={(e) => {
+                setEndValue(e.features[0].properties.full_address)
+              }}
+            />
+
+
+            <button>Submit</button>
+            {results.length > 0 && (<h3>There are {results.length} results!</h3>)}
+          </form>
+
+          <div className='results'>
+            {results.length > 0 ?
+            results.map((result, index) => (
+              <li key={index}>
+                <a>{result.properties.name}</a>
+              </li>
+              
+            ))
+            : <p>Press Submit</p>}
+          </div>
         </div>
+        
         <MapBox coordinates={coordinates} ref={mapRef}/>
-        <div className='results'>
-          {results ?
-           results.map((result, index) => (
-            <a key={index}><li>{result.properties.name}</li></a>
-           ))
-          : <p>Press Submit</p>}
-        </div>
+        
       </div>
   )
 }

@@ -1,18 +1,23 @@
 import MapBox from '../components/MapBox'
 import {useRef, useState, useEffect} from 'react'
 import { SearchBox  }  from '@mapbox/search-js-react';
+import Result from '../components/Result'
 
 export default function App() {
 
+
+
   const [coordinates, setCoordinates] = useState(null);
   const [results, setResults] = useState([])
-  const [resultIdsSet, setresultIdsSet] = useState(new Set())
-  // const startRef = useRef(null)
-  // const endRef = useRef(null)
+  let resultIdsSet = new Set()
   const mapRef = useRef(null)
-
-  const [startValue, setStartValue] = useState([])
-  const [endValue, setEndValue] = useState([])
+  const [startValue, setStartValue] = useState(null)
+  const [endValue, setEndValue] = useState(null)
+  const [checkedItems, setCheckedItems] = useState({
+    fast_food: false,
+    diner_restaurant: false,
+    burger_restaurant: false,
+  })
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -22,7 +27,8 @@ export default function App() {
       (error) => {
         console.error(error);
       }
-    );
+    );    
+
   }, []);
 
   useEffect(() => {
@@ -30,7 +36,18 @@ export default function App() {
       addMapPoint(result.geometry.coordinates, `poi${index}`)
     })
   }, [results])
+  
 
+  function handleCheckboxChange(e) {
+    const { name, checked } = e.target;
+    setCheckedItems((prevState) => ({
+      ...prevState,
+      [name]: checked,
+    }));
+  }
+
+
+  
   function addMapPoint(coords, id){
 
 
@@ -68,17 +85,31 @@ export default function App() {
 
 
   async function updateResults(encodedPolyline){
+    if (results > 100) return
     const resultsQuery = await fetch(`https://api.mapbox.com/search/searchbox/v1/category/food?access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw&language=en&limit=25&route=${encodedPolyline}&route_geometry=polyline6&sar_type=isochrone`)
     const resultsJson = await resultsQuery.json()
+
     //update results only if the id is not in idSet
-    const newResults = resultsJson.features.filter((result) => {
+    let newResults = resultsJson.features.filter((result) => {
       if (resultIdsSet.has(result.properties.mapbox_id)){
         return false
       }
       resultIdsSet.add(result.properties.mapbox_id)
-      setresultIdsSet(prev => prev.add(result.properties.mapbox_id))
       return true
     })
+
+    // creates a set of all categories to search by
+    const categoriesToSortBy = new Set(Object.entries(checkedItems).filter(element => {
+      return element[1]
+    }).map((element) => {
+      return element[0]
+    }))
+
+    // filters all the poi's with missing categories
+    newResults = newResults.filter((result) => {
+      return result.properties.poi_category_ids.some(element => categoriesToSortBy.has(element))
+    })
+    
     setResults(prevResults => [...prevResults, ...newResults])
   }
 
@@ -180,7 +211,7 @@ export default function App() {
   return (
       <div className="content">
         <div className='left'>
-          <form onSubmit={handleSubmit} >
+          <form className='form-container' onSubmit={handleSubmit}>
             <h3>Start</h3>
 
             <SearchBox
@@ -196,11 +227,7 @@ export default function App() {
                 setStartValue(e.features[0].properties.full_address)
               }}
             />
-
-
             <h3>End</h3>
-
-
             <SearchBox
               accessToken='pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw'
               options={{
@@ -214,21 +241,35 @@ export default function App() {
                 setEndValue(e.features[0].properties.full_address)
               }}
             />
+            <button disabled={!(startValue && endValue)} className='submit-button'>Submit</button>
+            
 
-
-            <button>Submit</button>
-            {results.length > 0 && (<h3>There are {results.length} results!</h3>)}
           </form>
-
+          <div className='result-info'>
+            <h3>There are {results.length} results!</h3>
+            <p>Sort By: </p>
+            <div className='sort-checkboxes'>
+              <label>
+                <input onChange={handleCheckboxChange} checked={checkedItems.fast_food} type='checkbox' name='fast_food'/>
+                Fast-food
+              </label>
+              <label>
+                <input onChange={handleCheckboxChange} checked={checkedItems.diner_restaurant} type='checkbox' name='diner_restaurant'/>
+                diner_restaurant
+              </label>
+              <label>
+                <input onChange={handleCheckboxChange} checked={checkedItems.burger_restaurant} type='checkbox' name='burger_restaurant'/>
+                burger_restaurant
+              </label>
+            </div>
+            
+          </div>
           <div className='results'>
-            {results.length > 0 ?
+            
+            {results.length > 0 &&
             results.map((result, index) => (
-              <li key={index}>
-                <a>{result.properties.name}</a>
-              </li>
-              
-            ))
-            : <p>Press Submit</p>}
+              <Result name={result.properties.name} address={result.properties.address} distance={'5 miles'} key={index}/>
+            ))}
           </div>
         </div>
         

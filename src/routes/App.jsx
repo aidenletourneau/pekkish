@@ -14,9 +14,9 @@ export default function App() {
   const [startValue, setStartValue] = useState(null)
   const [endValue, setEndValue] = useState(null)
   const [checkedItems, setCheckedItems] = useState({
-    fast_food: false,
-    diner_restaurant: false,
-    burger_restaurant: false,
+    fast_food: true,
+    diner_restaurant: true,
+    burger_restaurant: true,
   })
 
   useEffect(() => {
@@ -46,8 +46,6 @@ export default function App() {
     }));
   }
 
-
-  
   function addMapPoint(coords, id){
 
 
@@ -83,10 +81,10 @@ export default function App() {
     });
   }
 
-
   async function updateResults(encodedPolyline){
     if (results > 100) return
-    const resultsQuery = await fetch(`https://api.mapbox.com/search/searchbox/v1/category/food?access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw&language=en&limit=25&route=${encodedPolyline}&route_geometry=polyline6&sar_type=isochrone`)
+    console.log(encodedPolyline)
+    const resultsQuery = await fetch(`https://api.mapbox.com/search/searchbox/v1/category/food?access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw&language=en&limit=25&route=${encodedPolyline}&route_geometry=polyline6&sar_type=isochrone&time_deviation=1`)
     const resultsJson = await resultsQuery.json()
 
     //update results only if the id is not in idSet
@@ -193,6 +191,7 @@ export default function App() {
 
   async function handleSubmit(e){
     e.preventDefault()
+    setResults([])
 
     const startData = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${startValue}&access_token=pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw`)
     const startJson = await startData.json()
@@ -213,7 +212,6 @@ export default function App() {
         <div className='left'>
           <form className='form-container' onSubmit={handleSubmit}>
             <h3>Start</h3>
-
             <SearchBox
               accessToken='pk.eyJ1IjoiYWlkZW5sZXRvdXJuZWF1IiwiYSI6ImNseWt2bnhyeTE1MzgyanB3OGdpMmlwazcifQ.vjNNtL5UZ9uolkH7ZPI-gw'
               options={{
@@ -242,8 +240,6 @@ export default function App() {
               }}
             />
             <button disabled={!(startValue && endValue)} className='submit-button'>Submit</button>
-            
-
           </form>
           <div className='result-info'>
             <h3>There are {results.length} results!</h3>
@@ -262,19 +258,15 @@ export default function App() {
                 burger_restaurant
               </label>
             </div>
-            
           </div>
           <div className='results'>
-            
             {results.length > 0 &&
             results.map((result, index) => (
               <Result name={result.properties.name} address={result.properties.address} distance={'5 miles'} key={index}/>
             ))}
           </div>
         </div>
-        
         <MapBox coordinates={coordinates} ref={mapRef}/>
-        
       </div>
   )
 }

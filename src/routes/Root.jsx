@@ -10,18 +10,19 @@ export default function Root() {
 
   return (
       
-      <>
-        <Sidebar rootStyles={{
-          [`.${sidebarClasses.container}`]: {
-            backgroundColor: 'gray',
-          },
-          }}>
-          <Menu>
-            <MenuItem component={<Link to='/about'/>}> About </MenuItem>
-            <MenuItem component={<Link to='/'/>}> Home </MenuItem>
-          </Menu>
-        </Sidebar>
-        <Outlet/>
-      </>
+    <>
+      <Sidebar rootStyles={{
+        [`.${sidebarClasses.container}`]: {
+          backgroundColor: 'gray',
+        },
+        }}
+        width='10%'>
+        <Menu>
+          <MenuItem component={<Link to='/about'/>}> About </MenuItem>
+          <MenuItem component={<Link to='/'/>}> Home </MenuItem>
+        </Menu>
+      </Sidebar>
+      <Outlet/>
+    </>
   )
 }
